@@ -1,0 +1,25 @@
+{
+  "name": "uni",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "formidable": "^1.2.2",
+    "hbs": "^4.1.1",
+    "jalali-moment": "^3.3.8",
+    "mysql2": "^2.2.5",
+    "sequelize": "^6.3.5",
+    "xlsx": "^0.16.8"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.2.0"
+  }
+}
