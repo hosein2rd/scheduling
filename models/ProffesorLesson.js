@@ -11,17 +11,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       proffesorLesson.belongsTo(models.Proffesor)
-      models.Proffesor.hasMany(proffesorLesson)
       proffesorLesson.belongsTo(models.Lesson)
+      models.Proffesor.hasMany(proffesorLesson)
       models.Lesson.hasMany(proffesorLesson)
       models.Proffesor.belongsToMany(models.Lesson, { through: proffesorLesson })
       models.Lesson.belongsToMany(models.Proffesor, { through: proffesorLesson })
     }
   };
-  proffesorLesson.init({
-    proffesorId: DataTypes.INTEGER,
-    lessonId: DataTypes.INTEGER
-  }, {
+  proffesorLesson.init({}, {
     sequelize,
     modelName: 'proffesorLesson',
   });

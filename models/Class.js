@@ -3,23 +3,22 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class lesson extends Model {
+  class classEntity extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      classEntity.belongsTo(models.Lesson)
+      models.Lesson.hasOne(classEntity)
     }
   };
-  lesson.init({
-    name: DataTypes.STRING,
-    count: { type: DataTypes.INTEGER, defaultValue: 0 },
-    isTaken: { type: DataTypes.BOOLEAN, defaultValue: false }
+  classEntity.init({
+    name: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'lesson',
+    modelName: 'class',
   });
-  return lesson;
+  return classEntity;
 };

@@ -11,8 +11,13 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
-      studentCount: {
-        type: Sequelize.INTEGER
+      count: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0
+      },
+      isTaken: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       createdAt: {
         allowNull: false,

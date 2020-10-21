@@ -1,29 +1,22 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('slots', {
+    await queryInterface.createTable('classes', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      startTime: {
-        type: Sequelize.DATE
+      name: {
+        type: Sequelize.STRING
       },
-      endTime: {
-        type: Sequelize.DATE
-      },
-      isOk: {
-        type: Sequelize.BOOLEAN,
-        defalutValue: false
-      },
-      proffesorId: {
+      lessonId: {
         type: Sequelize.INTEGER,
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
         references: {
-          model: 'proffesors',
+          model: 'lessons',
           key: 'id'
         }
       },
@@ -38,6 +31,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('slots');
+    await queryInterface.dropTable('classes');
   }
 };

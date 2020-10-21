@@ -52,101 +52,78 @@ app.post('/uploads', (req, res) => {
             
                 const workbook = XLSX.readFile(__dirname + '/public/uploads/data.xlsx')
                 const {
-                    Proffesors: proffesorSheet,
-                    Lessons: lessonSheet,
-                    Slots: slotSheet,
-                    ProffesorLessons: proffesorLessonSheet
+                    proffesorLessons: proffesorLessonSheet,
+                    lessons: lessonSheet,
+                    slots: slotSheet,
+                    classes: classesSheet
                 } = workbook.Sheets
 
-                const proffesors = Helper.parseProffesorSheet(proffesorSheet)
-                const lessons = Helper.parseLessonSheet(lessonSheet)
-                const proffesorLessons = Helper.parseProffesorLessonSheet(proffesorLessonSheet)
-                const slots = Helper.parseSlotSheet(slotSheet)
-
-                for (const proffesor of proffesors) {
-                    await db.Proffesor.create({ id: proffesor.id, name: proffesor.name })
-                }
-
-                for (const lesson of lessons) {
-                    await db.Lesson.create({
-                        id: lesson.id,
-                        name: lesson.name,
-                        studentCount: lesson.studentCount
-                    })
-                }
-
-                for (const pl of proffesorLessons) {
-                    await db.ProffesorLesson.create({
-                        id: pl.id,
-                        proffesorId: pl.proffesorId,
-                        lessonId: pl.lessonId
-                    })
-                }
-
-                for (const slot of slots) {
+                const proffesorSlots = Helper.parseProffesorSheet(slotSheet)
+                for (const proffesorSlot of proffesorSlots) {
+                    const proffesor = await db.Proffesor.create({ name: proffesorSlot.proffesor })
                     await db.Slot.create({
-                        id: slot.id,
-                        startTime: new Date(slot.startTime * 1000),
-                        endTime: new Date(slot.endTime * 1000),
-                        isOk: slot.isOk,
-                        proffesorId: slot.proffesorId
+                        saturday: proffesorSlot.saturday,
+                        sunday: proffesorSlot.sunday,
+                        monday: proffesorSlot.monday,
+                        tuesday: proffesorSlot.tuesday,
+                        wendsday: proffesorSlot.wendsday,
+                        proffesorId: proffesor.id
+                    })
+
+                }
+                
+                const lessons = Helper.parseLessonSheet(lessonSheet)
+                for (const lessonInfo of lessons) {
+                    await db.Lesson.create({ name: lessonInfo.lesson, count: lessonInfo.count })
+                }
+
+                const proffesorLessons = Helper.parseProffesorLessonSheet(proffesorLessonSheet)
+                for (const proffesorLesson of proffesorLessons) {
+                    const proffesor = await db.Proffesor.findOne({
+                        where: { name: proffesorLesson.proffesor }
+                    })
+
+                    const lesson = await db.Lesson.findOne({
+                        where: { name: proffesorLesson.lesson }
+                    })
+
+                    await db.ProffesorLesson.create({
+                        proffesorId: proffesor.id,
+                        lessonId: lesson.id
                     })
                 }
-            })
 
-            res.redirect('/result')
+                const classes = Helper.parseClassesSheet(classesSheet)
+                for (const classInfo of classes) {
+                    const lesson = await db.Lesson.findOne({ where: { name: classInfo.lesson } })
+
+                    await db.Class.create({ lessonId: lesson.id, name: `${classInfo.className}` })
+                }
+
+                return res.redirect('/result')
+            })
         })
     })
 })
 
 app.get('/result', async (req, res) => {
+    await db.Lesson.update({ isTaken: false }, { where: {} })
+    const saturdayProffesors = await Helper.findWeekProffesor(0)
+    const saturday = await Helper.getWeekPlan(saturdayProffesors)
 
-    const proffesors = await db.Proffesor.findAll({
-        include: [
-            { model: db.Lesson, order: [['studentCount', 'DESC']] },
-            { model: db.Slot, order: [['startTime', 'ASC']] }
-        ]
-    })
+    const sundayProffesors = await Helper.findWeekProffesor(1)
+    const sunday = await Helper.getWeekPlan(sundayProffesors)
 
-    const result = []
+    const mondayProffesors = await Helper.findWeekProffesor(2)
+    const monday = await Helper.getWeekPlan(mondayProffesors)
 
-    for (const proffesor of proffesors) {
-        
-        const obj = { name: proffesor.name }
+    const tuesdayProffesors = await Helper.findWeekProffesor(3)
+    const tuesday = await Helper.getWeekPlan(tuesdayProffesors)
 
-        for (const lesson of proffesor.lessons) {
-            if (proffesor.slots && proffesor.slots.length !== 0) {
-                for (const slot of proffesor.slots) {
-                    if (slot.isOk) {
-                        obj.lesson = lesson.name
+    const wendsdayProffesors = await Helper.findWeekProffesor(4)
+    const wendsday = await Helper.getWeekPlan(wendsdayProffesors)
 
-                        if (!hasConflict(result, new Date(slot.startTime), new Date(slot.endTime))) {
-                            obj.startDate = momentJalali(slot.startTime, 'YYYY/MM/DD').local('fa').format('jYYYY/jMM/jDD HH:MM')
-                            obj.endDate = momentJalali(slot.endTime, 'YYYY/MM/DD').local('fa').format('YYYY/MM/DD HH:MM')
-
-                            result.push(obj)
-
-                            break
-                        }
-                    }
-                }
-            }
-        } 
-    }
-
-    res.render('result', { result })
+    res.render('result', { saturday, sunday, monday, tuesday, wendsday })
 })
-
-const hasConflict = (result, startTime, endTime) => {
-    if (result.length === 0) return false
-
-    for (const r of result) {
-        if (r.startDate < startTime && startTime < r.endDate) return true
-        if (r.startDate < endTime && endTime < r.endDate) return true
-    }
-
-    return false
-}
-
 
 app.listen(4000, () => console.log('server started on port 4000'))

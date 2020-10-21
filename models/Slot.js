@@ -11,13 +11,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       slot.belongsTo(models.Proffesor)
-      models.Proffesor.hasMany(slot)
+      models.Proffesor.hasOne(slot)
     }
   };
   slot.init({
-    startTime: DataTypes.DATE,
-    endTime: DataTypes.DATE,
-    isOk: { type: DataTypes.BOOLEAN, defaultValue: false }
+    saturday: DataTypes.BOOLEAN,
+    sunday: DataTypes.BOOLEAN,
+    monday: DataTypes.BOOLEAN,
+    tuesday: DataTypes.BOOLEAN,
+    wendsday: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'slot',
