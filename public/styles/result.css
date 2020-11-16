@@ -3,8 +3,12 @@ h1 {
     margin: 50px;
 }
 
-a {
+.return-home {
     text-align: center;
+    margin: 25px;
+}
+
+.dropdown-margin {
     margin: 25px;
 }
 

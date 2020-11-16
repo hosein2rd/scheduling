@@ -25,20 +25,21 @@ const parseProffesorSheet = (sheet) => {
 const parseLessonSheet = (sheet) => {
     const keys = Object.keys(sheet)
 
-    const size = (keys.length / 7)
+    const size = (keys.length / 8)
 
     const result = []
 
     for (let i = 2; i <= size; i++) {
         result.push({
             lesson: sheet[`A${i}`].v,
+            forYear: sheet[`B${i}`].v,
             count:
-                sheet[`B${i}`].v +
                 sheet[`C${i}`].v +
                 sheet[`D${i}`].v +
                 sheet[`E${i}`].v +
                 sheet[`F${i}`].v +
-                sheet[`G${i}`].v
+                sheet[`G${i}`].v +
+                sheet[`H${i}`].v
         })
     }
 
@@ -81,13 +82,30 @@ const parseClassesSheet = (sheet) => {
     return result
 }
 
+const parseInterferences = (sheet) => {
+    const keys = Object.keys(sheet)
+
+    const size = (keys.length / 2)
+
+    const result = []
+
+    for (let i = 2; i <= size; i++) {
+        result.push({
+            lessonOne: sheet[`A${i}`].v,
+            lessonTwo: sheet[`B${i}`].v
+        })
+    }
+
+    return result
+}
+
 const getTime = (index) => {
     const time = ['8-10', '10-12', '14-16', '16-18']
 
     return time[index]
 }
 
-const findWeekProffesor = async (weekNumber) => {
+const findWeekProffesor = async (weekNumber, currentYuear) => {
     const where = {}
 
     switch (weekNumber) {
@@ -121,7 +139,7 @@ const findWeekProffesor = async (weekNumber) => {
             {
                 model: db.Lesson,
                 attributes: ['id', 'name', 'count', 'isTaken'],
-                where: { isTaken: false },
+                where: { isTaken: false, forYear: currentYuear },
                 required: true,
                 include: db.Class
             }
@@ -166,6 +184,11 @@ const getWeekPlan = async (weekProffesors) => {
     return result
 }
 
+const resetTable = async () => {
+    await db.Lesson.update({ isTaken: false }, { where: {} })
+    await db.Slot.update({ isTaken: false  }, { where: {} })
+}
+
 module.exports = {
     parseProffesorSheet,
     parseLessonSheet,
@@ -173,5 +196,7 @@ module.exports = {
     parseClassesSheet,
     getTime,
     findWeekProffesor,
-    getWeekPlan
+    getWeekPlan,
+    resetTable,
+    parseInterferences
 }

@@ -58,7 +58,9 @@ app.post('/uploads', (req, res) => {
                     proffesorLessons: proffesorLessonSheet,
                     lessons: lessonSheet,
                     slots: slotSheet,
-                    classes: classesSheet
+                    classes: classesSheet,
+                    interference: interferenceSheet
+
                 } = workbook.Sheets
 
                 const proffesorSlots = Helper.parseProffesorSheet(slotSheet)
@@ -114,7 +116,9 @@ app.post('/uploads', (req, res) => {
                 
                 const lessons = Helper.parseLessonSheet(lessonSheet)
                 for (const lessonInfo of lessons) {
-                    await db.Lesson.create({ name: lessonInfo.lesson, count: lessonInfo.count })
+                    await db.Lesson.create({ name: lessonInfo.lesson, count: lessonInfo.count, forYear: lessonInfo.forYear })
+                    const year = await db.Year.findOne({ where: { value: lessonInfo.forYear } })
+                    if (!year) await db.Year.create({ value: lessonInfo.forYear })
                 }
 
                 const proffesorLessons = Helper.parseProffesorLessonSheet(proffesorLessonSheet)
@@ -133,6 +137,11 @@ app.post('/uploads', (req, res) => {
                     })
                 }
 
+                const interferences = Helper.parseInterferences(interferenceSheet)
+                for (const interference of interferences) {
+                    await db.Interference.create({ lessonOne: interference.lessonOne, lessonTwo: interference.lessonTwo })
+                }
+
                 const classes = Helper.parseClassesSheet(classesSheet)
                 for (const classInfo of classes) {
                     const lesson = await db.Lesson.findOne({ where: { name: classInfo.lesson } })
@@ -147,23 +156,47 @@ app.post('/uploads', (req, res) => {
 })
 
 app.get('/result', async (req, res) => {
-    await db.Lesson.update({ isTaken: false }, { where: {} })
-    const saturdayProffesors = await Helper.findWeekProffesor(0)
+    const years = await db.Year.findAll()
+    const currentYear = years[0].value
+    await Helper.resetTable()
+    const saturdayProffesors = await Helper.findWeekProffesor(0, currentYear)
     const saturday = await Helper.getWeekPlan(saturdayProffesors)
 
-    const sundayProffesors = await Helper.findWeekProffesor(1)
-    const sunday = await Helper.getWeekPlan(sundayProffesors)
+    const sundayProffesors = await Helper.findWeekProffesor(1, currentYear)
+    const sunday = await Helper.getWeekPlan(sundayProffesors, currentYear)
 
-    const mondayProffesors = await Helper.findWeekProffesor(2)
+    const mondayProffesors = await Helper.findWeekProffesor(2, currentYear)
     const monday = await Helper.getWeekPlan(mondayProffesors)
 
-    const tuesdayProffesors = await Helper.findWeekProffesor(3)
+    const tuesdayProffesors = await Helper.findWeekProffesor(3, currentYear)
     const tuesday = await Helper.getWeekPlan(tuesdayProffesors)
 
-    const wendsdayProffesors = await Helper.findWeekProffesor(4)
+    const wendsdayProffesors = await Helper.findWeekProffesor(4, currentYear)
     const wendsday = await Helper.getWeekPlan(wendsdayProffesors)
 
-    res.render('result', { saturday, sunday, monday, tuesday, wendsday })
+    res.render('result', { saturday, sunday, monday, tuesday, wendsday, years, currentYear })
+})
+
+app.get('/result/:year', async (req, res) => {
+    const years = await db.Year.findAll()
+    const currentYear = req.params.year
+    await Helper.resetTable()
+    const saturdayProffesors = await Helper.findWeekProffesor(0, currentYear)
+    const saturday = await Helper.getWeekPlan(saturdayProffesors)
+
+    const sundayProffesors = await Helper.findWeekProffesor(1, currentYear)
+    const sunday = await Helper.getWeekPlan(sundayProffesors, currentYear)
+
+    const mondayProffesors = await Helper.findWeekProffesor(2, currentYear)
+    const monday = await Helper.getWeekPlan(mondayProffesors)
+
+    const tuesdayProffesors = await Helper.findWeekProffesor(3, currentYear)
+    const tuesday = await Helper.getWeekPlan(tuesdayProffesors)
+
+    const wendsdayProffesors = await Helper.findWeekProffesor(4, currentYear)
+    const wendsday = await Helper.getWeekPlan(wendsdayProffesors)
+
+    res.render('result', { saturday, sunday, monday, tuesday, wendsday, years, currentYear })
 })
 
 app.listen(4000, () => console.log('server started on port 4000'))

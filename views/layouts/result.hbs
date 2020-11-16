@@ -8,9 +8,21 @@
     <title>Result</title>
 </head>
 <body>
-    <h1>Scheduling - Result</h1>
+    <h1>Scheduling - {{currentYear}}</h1>
 
-    <a href="/">بازگشت به صفحه اصلی</a>
+    <a class="return-home" href="/">بازگشت به صفحه اصلی</a>
+    <div class="dropdown dropdown-margin">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        ورودی
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+        {{#each years}}
+          <a class="dropdown-item" href="/result/{{this.value}}">{{this.value}}</a>
+        {{/each}}
+        {{!-- <button class="dropdown-item" type="button">Another action</button>
+        <button class="dropdown-item" type="button">Something else here</button> --}}
+      </div>
+    </div>
 
     {{!-- <table class="table">
     <thead>
