@@ -17,8 +17,9 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     count: { type: DataTypes.INTEGER, defaultValue: 0 },
     isTaken: { type: DataTypes.BOOLEAN, defaultValue: false },
-    interYear: { type: DataTypes.STRING },
-    forYear: { type: DataTypes.STRING }
+    forYear: { type: DataTypes.STRING },
+    weekDay: { type: DataTypes.STRING },
+    startTime: { type: DataTypes.STRING }
   }, {
     sequelize,
     modelName: 'lesson',

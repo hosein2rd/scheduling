@@ -1,4 +1,5 @@
 const db = require('../models')
+const { Op } = require('sequelize')
 
 const parseProffesorSheet = (sheet) => {
     const keys = Object.keys(sheet)
@@ -149,9 +150,8 @@ const findWeekProffesor = async (weekNumber, currentYuear) => {
     return result
 }
 
-const getWeekPlan = async (weekProffesors) => {
+const getWeekPlan = async (weekProffesors, weekNumber) => {
     const result = []
-    let count = 0
     for (const weekProffesor of weekProffesors) {
         const proffesor = weekProffesor.name
         const slots = weekProffesor.slots
@@ -162,19 +162,43 @@ const getWeekPlan = async (weekProffesors) => {
             if (!slot.isTaken) {
                 for (const lesson of lessons) {
                     if (!lesson.isTaken && result.length < 4) {
-                        count = count + 1
-    
-                        await slot.update({ isTaken: true })
-                        await lesson.update({ isTaken: true })
-    
-                        console.log('this is class', lesson)
-    
-                        result.push({
-                            proffesor,
-                            lesson: lesson.name,
-                            time: slot.hours,
-                            class: lesson.class.name
+
+                        const lessonName = lesson.name
+                        const interference = await db.Interference.findOne({ where:
+                            {
+                                [Op.or]: [{ lessonOne: lessonName }, { lessonTwo: lessonName }]
+                            }
                         })
+
+                        if (interference) {
+                            let anotherLesson = (interference.lessonOne === lessonName) ? interference.lessonTwo : interference.lessonOne
+                            anotherLesson = await db.Lesson.findOne({ where: { name: anotherLesson } })
+                            const anotherWeekNumebr = getWeekNumber(anotherLesson.weekDay)
+
+                            if (anotherWeekNumebr !== weekNumber) {
+                                await slot.update({ isTaken: true })
+                                await lesson.update({ isTaken: true, startTime: slot.hours, weekDay: getWeekDay(weekNumber) })
+            
+                                result.push({
+                                    proffesor,
+                                    lesson: lesson.name,
+                                    time: slot.hours,
+                                    class: lesson.class.name
+                                })
+                            } else {
+
+                            }
+                        } else {
+                            await slot.update({ isTaken: true })
+                            await lesson.update({ isTaken: true, startTime: slot.hours, weekDay: getWeekDay(weekNumber) })
+        
+                            result.push({
+                                proffesor,
+                                lesson: lesson.name,
+                                time: slot.hours,
+                                class: lesson.class.name
+                            })
+                        }
                     }
                 }
             }
@@ -187,6 +211,57 @@ const getWeekPlan = async (weekProffesors) => {
 const resetTable = async () => {
     await db.Lesson.update({ isTaken: false }, { where: {} })
     await db.Slot.update({ isTaken: false  }, { where: {} })
+}
+
+const getWeekDay = (weekNumber) => {
+    let result
+    switch (weekNumber) {
+        case 0: {
+            result = 'شنبه'
+            break
+        }
+        case 1: { 
+            result = 'یکشنبه'
+            break
+        }
+        case 2: {
+            result = 'دوشنبه'
+            break
+        }
+        case 3: {
+            result = 'سه‌شنبه'
+            break
+        }
+        case 4: {
+            result = 'چهارشنبه'
+            break
+        }
+    }
+
+    return result
+}
+
+const getWeekNumber = (weekDay) => {
+    let result
+    switch (weekDay) {
+        case 'شنبه':
+            result = 0
+            break;
+        case 'یکشنبه':
+            result = 1
+            break;
+        case 'دوشنبه':
+            result = 2
+            break;
+        case 'سه‌شنبه':
+            result = 3
+            break;
+        case 'چهارشنبه':
+            result = 4
+            break;
+    }
+
+    return result
 }
 
 module.exports = {

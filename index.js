@@ -37,6 +37,9 @@ app.post('/uploads', (req, res) => {
             fs.writeFile(__dirname + '/public/uploads/data.xlsx', data, async (err) => {
                 if (err) return console.log('write file error', err)
     
+                await db.Interference.destroy({
+                    where: {},
+                })
                 await db.Slot.destroy({
                     where: {},
                 })
@@ -160,19 +163,19 @@ app.get('/result', async (req, res) => {
     const currentYear = years[0].value
     await Helper.resetTable()
     const saturdayProffesors = await Helper.findWeekProffesor(0, currentYear)
-    const saturday = await Helper.getWeekPlan(saturdayProffesors)
+    const saturday = await Helper.getWeekPlan(saturdayProffesors, 0)
 
     const sundayProffesors = await Helper.findWeekProffesor(1, currentYear)
-    const sunday = await Helper.getWeekPlan(sundayProffesors, currentYear)
+    const sunday = await Helper.getWeekPlan(sundayProffesors, 1)
 
     const mondayProffesors = await Helper.findWeekProffesor(2, currentYear)
-    const monday = await Helper.getWeekPlan(mondayProffesors)
+    const monday = await Helper.getWeekPlan(mondayProffesors, 2)
 
     const tuesdayProffesors = await Helper.findWeekProffesor(3, currentYear)
-    const tuesday = await Helper.getWeekPlan(tuesdayProffesors)
+    const tuesday = await Helper.getWeekPlan(tuesdayProffesors, 3)
 
     const wendsdayProffesors = await Helper.findWeekProffesor(4, currentYear)
-    const wendsday = await Helper.getWeekPlan(wendsdayProffesors)
+    const wendsday = await Helper.getWeekPlan(wendsdayProffesors, 4)
 
     res.render('result', { saturday, sunday, monday, tuesday, wendsday, years, currentYear })
 })
@@ -182,19 +185,19 @@ app.get('/result/:year', async (req, res) => {
     const currentYear = req.params.year
     await Helper.resetTable()
     const saturdayProffesors = await Helper.findWeekProffesor(0, currentYear)
-    const saturday = await Helper.getWeekPlan(saturdayProffesors)
+    const saturday = await Helper.getWeekPlan(saturdayProffesors, 0)
 
     const sundayProffesors = await Helper.findWeekProffesor(1, currentYear)
-    const sunday = await Helper.getWeekPlan(sundayProffesors, currentYear)
+    const sunday = await Helper.getWeekPlan(sundayProffesors, 1)
 
     const mondayProffesors = await Helper.findWeekProffesor(2, currentYear)
-    const monday = await Helper.getWeekPlan(mondayProffesors)
+    const monday = await Helper.getWeekPlan(mondayProffesors, 2)
 
     const tuesdayProffesors = await Helper.findWeekProffesor(3, currentYear)
-    const tuesday = await Helper.getWeekPlan(tuesdayProffesors)
+    const tuesday = await Helper.getWeekPlan(tuesdayProffesors, 3)
 
     const wendsdayProffesors = await Helper.findWeekProffesor(4, currentYear)
-    const wendsday = await Helper.getWeekPlan(wendsdayProffesors)
+    const wendsday = await Helper.getWeekPlan(wendsdayProffesors, 4)
 
     res.render('result', { saturday, sunday, monday, tuesday, wendsday, years, currentYear })
 })

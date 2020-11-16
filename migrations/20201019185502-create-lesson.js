@@ -19,7 +19,10 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
-      interYear: {
+      weekDay: {
+        type: Sequelize.STRING
+      },
+      startTime: {
         type: Sequelize.STRING
       },
       forYear: {
