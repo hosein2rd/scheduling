@@ -8,29 +8,15 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      saturday: {
-        type: Sequelize.BOOLEAN
+      hours: {
+        type: Sequelize.STRING
       },
-      sunday: {
-        type: Sequelize.BOOLEAN
+      weekDay: {
+        type: Sequelize.STRING
       },
-      monday: {
-        type: Sequelize.BOOLEAN
-      },
-      tuesday: {
-        type: Sequelize.BOOLEAN
-      },
-      wendsday: {
-        type: Sequelize.BOOLEAN
-      },
-      proffesorId: {
-        type: Sequelize.INTEGER,
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-        references: {
-          model: 'proffesors',
-          key: 'id'
-        }
+      isTaken: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       createdAt: {
         allowNull: false,

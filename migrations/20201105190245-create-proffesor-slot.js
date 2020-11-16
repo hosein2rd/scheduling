@@ -1,29 +1,30 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('lessons', {
+    await queryInterface.createTable('proffesorSlots', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
-        type: Sequelize.STRING
-      },
-      count: {
+      proffesorId: {
         type: Sequelize.INTEGER,
-        defaultValue: 0
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+        references: {
+          model: 'proffesors',
+          key: 'id'
+        }
       },
-      isTaken: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
-      },
-      interYear: {
-        type: Sequelize.STRING
-      },
-      forYear: {
-        type: Sequelize.STRING
+      slotId: {
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+        references: {
+          model: 'slots',
+          key: 'id'
+        }
       },
       createdAt: {
         allowNull: false,
@@ -36,6 +37,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('lessons');
+    await queryInterface.dropTable('proffesorSlots');
   }
 };

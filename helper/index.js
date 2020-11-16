@@ -8,14 +8,14 @@ const parseProffesorSheet = (sheet) => {
     console.log('size is ', size)
 
     const result = []
-    for (let i = 2; i <= size; i++) {
+    for (let i = 2; i <= size; i++) { 
         result.push({
             proffesor: sheet[`A${i}`].v,
-            saturday: sheet[`B${i}`].v,
-            sunday: sheet[`C${i}`].v,
-            monday: sheet[`D${i}`].v,
-            tuesday: sheet[`E${i}`].v,
-            wendsday: sheet[`F${i}`].v,
+            saturdayHoursWorking: sheet[`B${i}`].v.split(','),
+            sundayHoursWorking: sheet[`C${i}`].v.split(','),
+            mondayHoursWorking: sheet[`D${i}`].v.split(','),
+            tuesdayHoursWorking: sheet[`E${i}`].v.split(','),
+            wendsdayHoursWorking: sheet[`F${i}`].v.split(','),
         })
     }
 
@@ -65,7 +65,7 @@ const parseProffesorLessonSheet = (sheet) => {
 const parseClassesSheet = (sheet) => {
     const keys = Object.keys(sheet)
 
-    const size = (keys.length / 2)
+    const size = (keys.length / 7)
 
     console.log('size is ', size)
 
@@ -82,7 +82,7 @@ const parseClassesSheet = (sheet) => {
 }
 
 const getTime = (index) => {
-    const time = ['8 - 10', '10-12', '14 - 16', '16 - 18']
+    const time = ['8-10', '10-12', '14-16', '16-18']
 
     return time[index]
 }
@@ -92,26 +92,28 @@ const findWeekProffesor = async (weekNumber) => {
 
     switch (weekNumber) {
         case 0: {
-            where.saturday = true
+            where.weekDay = 'شنبه'
             break
         }
         case 1: { 
-            where.sunday = true
+            where.weekDay = 'یکشنبه'
             break
         }
         case 2: {
-            where.monday = true
+            where.weekDay = 'دوشنبه'
             break
         }
         case 3: {
-            where.tuesday = true
+            where.weekDay = 'سه‌شنبه'
             break
         }
         case 4: {
-            where.wendsday = true
+            where.weekDay = 'چهارشنبه'
             break
         }
     }
+
+    where.isTaken = false
 
     const result = await db.Proffesor.findAll({
         include: [
@@ -134,24 +136,28 @@ const getWeekPlan = async (weekProffesors) => {
     let count = 0
     for (const weekProffesor of weekProffesors) {
         const proffesor = weekProffesor.name
-        
-        if (count < 4) {
+        const slots = weekProffesor.slots
+
+        for (const slot of slots) {
             const lessons = weekProffesor.lessons
 
-            for (const lesson of lessons) {
-                if (!lesson.isTaken) {
-                    count = count + 1
-
-                    await lesson.update({ isTaken: true })
-
-                    console.log('this is class', lesson)
-
-                    result.push({
-                        proffesor,
-                        lesson: lesson.name,
-                        time: getTime(count - 1),
-                        class: lesson.class.name
-                    })
+            if (!slot.isTaken) {
+                for (const lesson of lessons) {
+                    if (!lesson.isTaken && result.length < 4) {
+                        count = count + 1
+    
+                        await slot.update({ isTaken: true })
+                        await lesson.update({ isTaken: true })
+    
+                        console.log('this is class', lesson)
+    
+                        result.push({
+                            proffesor,
+                            lesson: lesson.name,
+                            time: slot.hours,
+                            class: lesson.class.name
+                        })
+                    }
                 }
             }
         }

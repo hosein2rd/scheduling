@@ -49,6 +49,9 @@ app.post('/uploads', (req, res) => {
                 await db.Lesson.destroy({
                     where: {},
                 })
+                await db.ProffesorSlot.destroy({
+                    where: {},
+                })
             
                 const workbook = XLSX.readFile(__dirname + '/public/uploads/data.xlsx')
                 const {
@@ -61,15 +64,52 @@ app.post('/uploads', (req, res) => {
                 const proffesorSlots = Helper.parseProffesorSheet(slotSheet)
                 for (const proffesorSlot of proffesorSlots) {
                     const proffesor = await db.Proffesor.create({ name: proffesorSlot.proffesor })
-                    await db.Slot.create({
-                        saturday: proffesorSlot.saturday,
-                        sunday: proffesorSlot.sunday,
-                        monday: proffesorSlot.monday,
-                        tuesday: proffesorSlot.tuesday,
-                        wendsday: proffesorSlot.wendsday,
-                        proffesorId: proffesor.id
-                    })
 
+                    const saturdayWorkingHours = proffesorSlot.saturdayHoursWorking
+                    const sundayWorkingHours = proffesorSlot.sundayHoursWorking
+                    const mondayWorkingHours = proffesorSlot.mondayHoursWorking
+                    const tuesdayWorkingHours = proffesorSlot.tuesdayHoursWorking
+                    const wendsdayWorkingHours = proffesorSlot.wendsdayHoursWorking
+
+                    for (const index in saturdayWorkingHours) {
+                        if (saturdayWorkingHours[index] === '1') {
+                            const hours = Helper.getTime(index)
+                            const slot = await db.Slot.create({ hours, weekDay: 'شنبه' })
+                            await db.ProffesorSlot.create({ proffesorId: proffesor.id, slotId: slot.id })
+                        }
+                    }
+
+                    for (const index in sundayWorkingHours) {
+                        if (sundayWorkingHours[index] === '1') {
+                            const hours = Helper.getTime(index)
+                            const slot = await db.Slot.create({ hours, weekDay: 'یکشنبه' })
+                            await db.ProffesorSlot.create({ proffesorId: proffesor.id, slotId: slot.id })
+                        }
+                    }
+
+                    for (const index in mondayWorkingHours) {
+                        if (mondayWorkingHours[index] === '1') {
+                            const hours = Helper.getTime(index)
+                            const slot = await db.Slot.create({ hours, weekDay: 'دوشنبه' })
+                            await db.ProffesorSlot.create({ proffesorId: proffesor.id, slotId: slot.id })
+                        }
+                    }
+
+                    for (const index in tuesdayWorkingHours) {
+                        if (tuesdayWorkingHours[index] === '1') {
+                            const hours = Helper.getTime(index)
+                            const slot = await db.Slot.create({ hours, weekDay: 'سه‌شنبه' })
+                            await db.ProffesorSlot.create({ proffesorId: proffesor.id, slotId: slot.id })
+                        }
+                    }
+
+                    for (const index in wendsdayWorkingHours) {
+                        if (wendsdayWorkingHours[index] === '1') {
+                            const hours = Helper.getTime(index)
+                            const slot = await db.Slot.create({ hours, weekDay: 'چهارشنبه' })
+                            await db.ProffesorSlot.create({ proffesorId: proffesor.id, slotId: slot.id })
+                        }
+                    }
                 }
                 
                 const lessons = Helper.parseLessonSheet(lessonSheet)

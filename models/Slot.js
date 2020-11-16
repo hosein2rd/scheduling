@@ -9,17 +9,12 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      slot.belongsTo(models.Proffesor)
-      models.Proffesor.hasOne(slot)
-    }
+    static associate(models) {}
   };
   slot.init({
-    saturday: DataTypes.BOOLEAN,
-    sunday: DataTypes.BOOLEAN,
-    monday: DataTypes.BOOLEAN,
-    tuesday: DataTypes.BOOLEAN,
-    wendsday: DataTypes.BOOLEAN
+    hours: DataTypes.STRING,
+    weekDay: DataTypes.STRING,
+    isTaken: { type: DataTypes.BOOLEAN, defaultValue: false }
   }, {
     sequelize,
     modelName: 'slot',
