@@ -161,7 +161,7 @@ app.post('/uploads', (req, res) => {
 app.get('/result', async (req, res) => {
     const years = await db.Year.findAll()
     const currentYear = years[0].value
-    await Helper.resetTable()
+    await Helper.resetTable(currentYear)
     const saturdayProffesors = await Helper.findWeekProffesor(0, currentYear)
     const saturday = await Helper.getWeekPlan(saturdayProffesors, 0)
 
@@ -183,7 +183,7 @@ app.get('/result', async (req, res) => {
 app.get('/result/:year', async (req, res) => {
     const years = await db.Year.findAll()
     const currentYear = req.params.year
-    await Helper.resetTable()
+    await Helper.resetTable(currentYear)
     const saturdayProffesors = await Helper.findWeekProffesor(0, currentYear)
     const saturday = await Helper.getWeekPlan(saturdayProffesors, 0)
 

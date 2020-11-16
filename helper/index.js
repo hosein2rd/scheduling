@@ -106,6 +106,27 @@ const getTime = (index) => {
     return time[index]
 }
 
+const getIndexTime = (time) => {
+    let result
+
+    switch (time) {
+        case '8-10':
+            result = 0
+            break;
+        case '10-12':
+            result = 1
+            break
+        case '14-16':
+            result = 2
+            break
+        case '16-18':
+            result = 3
+            break
+    }
+
+    return result
+}
+
 const findWeekProffesor = async (weekNumber, currentYuear) => {
     const where = {}
 
@@ -132,8 +153,6 @@ const findWeekProffesor = async (weekNumber, currentYuear) => {
         }
     }
 
-    where.isTaken = false
-
     const result = await db.Proffesor.findAll({
         include: [
             { model: db.Slot, where, required: true },
@@ -151,6 +170,27 @@ const findWeekProffesor = async (weekNumber, currentYuear) => {
 }
 
 const getWeekPlan = async (weekProffesors, weekNumber) => {
+    // let result = [{
+    //     proffesor: '',
+    //     lesson: '',
+    //     time: '',
+    //     class: ''
+    // }, {
+    //     proffesor: '',
+    //     lesson: '',
+    //     time: '',
+    //     class: ''
+    // }, {
+    //     proffesor: '',
+    //     lesson: '',
+    //     time: '',
+    //     class: ''
+    // }, {
+    //     proffesor: '',
+    //     lesson: '',
+    //     time: '',
+    //     class: ''
+    // }]
     const result = []
     for (const weekProffesor of weekProffesors) {
         const proffesor = weekProffesor.name
@@ -159,7 +199,20 @@ const getWeekPlan = async (weekProffesors, weekNumber) => {
         for (const slot of slots) {
             const lessons = weekProffesor.lessons
 
-            if (!slot.isTaken) {
+            let count = 0
+
+            const takenLessons = await db.Lesson.findAll({
+                where: { isTaken: true },
+                include: [{ model: db.Proffesor, where: { id: weekProffesor.id }, required: true }]
+            })
+
+            for (const takenLesson of takenLessons) {
+                if (takenLesson.startTime === slot.hours && takenLesson.weekDay === slot.weekDay) {
+                    count += 1
+                }
+            }
+
+            if (!slot.isTaken && count === 0) {
                 for (const lesson of lessons) {
                     if (!lesson.isTaken && result.length < 4) {
 
@@ -185,8 +238,7 @@ const getWeekPlan = async (weekProffesors, weekNumber) => {
                                     time: slot.hours,
                                     class: lesson.class.name
                                 })
-                            } else {
-
+                                break
                             }
                         } else {
                             await slot.update({ isTaken: true })
@@ -198,6 +250,7 @@ const getWeekPlan = async (weekProffesors, weekNumber) => {
                                 time: slot.hours,
                                 class: lesson.class.name
                             })
+                            break
                         }
                     }
                 }
@@ -208,8 +261,8 @@ const getWeekPlan = async (weekProffesors, weekNumber) => {
     return result
 }
 
-const resetTable = async () => {
-    await db.Lesson.update({ isTaken: false }, { where: {} })
+const resetTable = async (currentYear) => {
+    await db.Lesson.update({ isTaken: false }, { where: { forYear: { [Op.eq]: currentYear } } })
     await db.Slot.update({ isTaken: false  }, { where: {} })
 }
 
