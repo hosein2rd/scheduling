@@ -170,27 +170,6 @@ const findWeekProffesor = async (weekNumber, currentYuear) => {
 }
 
 const getWeekPlan = async (weekProffesors, weekNumber) => {
-    // let result = [{
-    //     proffesor: '',
-    //     lesson: '',
-    //     time: '',
-    //     class: ''
-    // }, {
-    //     proffesor: '',
-    //     lesson: '',
-    //     time: '',
-    //     class: ''
-    // }, {
-    //     proffesor: '',
-    //     lesson: '',
-    //     time: '',
-    //     class: ''
-    // }, {
-    //     proffesor: '',
-    //     lesson: '',
-    //     time: '',
-    //     class: ''
-    // }]
     const result = []
     for (const weekProffesor of weekProffesors) {
         const proffesor = weekProffesor.name
