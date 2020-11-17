@@ -6,6 +6,15 @@ const Formidable = require('formidable')
 const fs = require('fs')
 const Helper = require('./helper')
 const momentJalali = require('jalali-moment')
+const Handlebars = require('hbs')
+
+Handlebars.registerHelper('equal', (arg1, arg2, options) => {
+    if (parseInt(arg1) === parseInt(arg2)) {
+        return options.fn(this)
+    }
+
+    return options.inverse(this);
+})
 
 const app = express()
 

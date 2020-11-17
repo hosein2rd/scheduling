@@ -122,6 +122,9 @@ const getIndexTime = (time) => {
         case '16-18':
             result = 3
             break
+        default:
+            result = 0
+            break
     }
 
     return result
@@ -170,7 +173,31 @@ const findWeekProffesor = async (weekNumber, currentYuear) => {
 }
 
 const getWeekPlan = async (weekProffesors, weekNumber) => {
-    const result = []
+    let result = [{
+        proffesor: '',
+        lesson: '',
+        time: '',
+        class: '',
+        index: ''
+    },{
+        proffesor: '',
+        lesson: '',
+        time: '',
+        class: '',
+        index: ''
+    },{
+        proffesor: '',
+        lesson: '',
+        time: '',
+        class: '',
+        index: ''
+    },{
+        proffesor: '',
+        lesson: '',
+        time: '',
+        class: '',
+        index: ''
+    }]
     for (const weekProffesor of weekProffesors) {
         const proffesor = weekProffesor.name
         const slots = weekProffesor.slots
@@ -193,7 +220,7 @@ const getWeekPlan = async (weekProffesors, weekNumber) => {
 
             if (!slot.isTaken && count === 0) {
                 for (const lesson of lessons) {
-                    if (!lesson.isTaken && result.length < 4) {
+                    if (!lesson.isTaken) {
 
                         const lessonName = lesson.name
                         const interference = await db.Interference.findOne({ where:
@@ -210,25 +237,33 @@ const getWeekPlan = async (weekProffesors, weekNumber) => {
                             if (anotherWeekNumebr !== weekNumber) {
                                 await slot.update({ isTaken: true })
                                 await lesson.update({ isTaken: true, startTime: slot.hours, weekDay: getWeekDay(weekNumber) })
-            
-                                result.push({
+
+                                const index = getIndexTime(slot.hours)
+
+                                result.splice(index, 1, {
                                     proffesor,
                                     lesson: lesson.name,
                                     time: slot.hours,
-                                    class: lesson.class.name
+                                    class: lesson.class.name,
+                                    index: getIndexTime(slot.hours)
                                 })
+
                                 break
                             }
                         } else {
                             await slot.update({ isTaken: true })
                             await lesson.update({ isTaken: true, startTime: slot.hours, weekDay: getWeekDay(weekNumber) })
         
-                            result.push({
+                            const index = getIndexTime(slot.hours)
+
+                            result.splice(index, 1, {
                                 proffesor,
                                 lesson: lesson.name,
                                 time: slot.hours,
-                                class: lesson.class.name
+                                class: lesson.class.name,
+                                index: getIndexTime(slot.hours)
                             })
+
                             break
                         }
                     }
@@ -236,6 +271,9 @@ const getWeekPlan = async (weekProffesors, weekNumber) => {
             }
         }
     }
+
+    console.log(getWeekDay(weekNumber))
+    console.log(result)
 
     return result
 }

@@ -26,17 +26,21 @@
         <thead class="thead-light">
           <tr>
             <th scope="col">روز هفته</th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
+            <th scope="col">8-10</th>
+            <th scope="col">10-12</th>
+            <th scope="col">14-16</th>
+            <th scope="col">16-18</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <th scope="row">شنبه</th>
             {{#each saturday}}
+              {{!-- {{#equal this.index @index}} --}}
                 <td>{{this.proffesor}} - {{this.lesson}} - کلاس {{this.class}} - ساعت {{this.time}}</td>
+                {{!-- {{else}}
+                <td> - - - </td>
+              {{/equal}} --}}
             {{/each}}
           </tr>
           <tr>
