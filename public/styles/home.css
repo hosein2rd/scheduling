@@ -1,5 +1,14 @@
 .input-container {
    width: 60%;
+   display: flex;
+   flex-direction: column;
+   justify-content: center !important;
+   justify-items: center;
+   align-items: center;
+}
+
+.btn-container {
+   margin: 25px;
 }
 
 body {
