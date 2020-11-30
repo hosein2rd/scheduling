@@ -211,4 +211,8 @@ app.get('/result/:year', async (req, res) => {
     res.render('result', { saturday, sunday, monday, tuesday, wendsday, years, currentYear })
 })
 
+app.post('/export', async (req, res) => {
+    res.redirect('/result')
+})
+
 app.listen(4000, () => console.log('server started on port 4000'))

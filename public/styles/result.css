@@ -32,3 +32,8 @@ table {
 .btn-container {
     margin: 0 25px;
 }
+
+.button-container {
+    display: flex;
+    justify-content: space-around;
+}

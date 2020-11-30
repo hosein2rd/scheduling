@@ -13,8 +13,11 @@
     <div class="header">
       <div>
         <a class="return-home" href="/">بازگشت به صفحه اصلی</a>
-        <div class="dropdown dropdown-margin">
-          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <div class="dropdown dropdown-margin button-container">
+          <form action="/export" method="POST" enctype="multipart/form-data">
+              <button type="submit" class="btn btn-primary" id="inputGroupFileAddon01">export</button>
+          </form>
+          <button class="btn btn-secondary dropdown-toggle ml-4" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             ورودی
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
