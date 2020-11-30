@@ -10,16 +10,32 @@
 <body>
     <h1>Scheduling - {{currentYear}}</h1>
 
-    <a class="return-home" href="/">بازگشت به صفحه اصلی</a>
-    <div class="dropdown dropdown-margin">
-      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        ورودی
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-        {{#each years}}
-          <a class="dropdown-item" href="/result/{{this.value}}">{{this.value}}</a>
-        {{/each}}
+    <div class="header">
+      <div>
+        <a class="return-home" href="/">بازگشت به صفحه اصلی</a>
+        <div class="dropdown dropdown-margin">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            ورودی
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+            {{#each years}}
+              <a class="dropdown-item" href="/result/{{this.value}}">{{this.value}}</a>
+            {{/each}}
+          </div>
+        </div>
       </div>
+      <form action="/uploads" method="POST" class="input-container" enctype="multipart/form-data">
+            <div class="input-group-prepend btn-container">
+                <button type="submit" class="btn btn-success" id="inputGroupFileAddon01">Run</button>
+            </div>
+            <div class="d-flex align-items-center justify-content-center input-group">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="this"
+                    aria-describedby="inputGroupFileAddon01" name="this" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                    <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+                </div>
+            </div>
+        </form>
     </div>
 
     <table class="table">
