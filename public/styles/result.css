@@ -26,6 +26,7 @@ table {
     width: 40%;
     margin: 25px;
     display: flex;
+    align-items: center;
 }
  
 .btn-container {
