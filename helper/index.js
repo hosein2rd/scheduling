@@ -64,25 +64,6 @@ const parseProffesorLessonSheet = (sheet) => {
     return result
 }
 
-const parseClassesSheet = (sheet) => {
-    const keys = Object.keys(sheet)
-
-    const size = (keys.length / 7)
-
-    console.log('size is ', size)
-
-    const result = []
-
-    for (let i = 2; i <= size; i++) {
-        result.push({
-            lesson: sheet[`A${i}`].v,
-            className: sheet[`B${i}`].v,
-        })
-    }
-
-    return result
-}
-
 const parseInterferences = (sheet) => {
     const keys = Object.keys(sheet)
 
@@ -164,7 +145,6 @@ const findWeekProffesor = async (weekNumber, currentYuear) => {
                 attributes: ['id', 'name', 'count', 'isTaken'],
                 where: { isTaken: false, forYear: currentYuear },
                 required: true,
-                include: db.Class
             }
         ]
     })
@@ -177,25 +157,21 @@ const getWeekPlan = async (weekProffesors, weekNumber) => {
         proffesor: '',
         lesson: '',
         time: '',
-        class: '',
         index: ''
     },{
         proffesor: '',
         lesson: '',
         time: '',
-        class: '',
         index: ''
     },{
         proffesor: '',
         lesson: '',
         time: '',
-        class: '',
         index: ''
     },{
         proffesor: '',
         lesson: '',
         time: '',
-        class: '',
         index: ''
     }]
     for (const weekProffesor of weekProffesors) {
@@ -244,7 +220,6 @@ const getWeekPlan = async (weekProffesors, weekNumber) => {
                                     proffesor,
                                     lesson: lesson.name,
                                     time: slot.hours,
-                                    class: lesson.class.name,
                                     index: getIndexTime(slot.hours)
                                 })
 
@@ -260,7 +235,6 @@ const getWeekPlan = async (weekProffesors, weekNumber) => {
                                 proffesor,
                                 lesson: lesson.name,
                                 time: slot.hours,
-                                class: lesson.class.name,
                                 index: getIndexTime(slot.hours)
                             })
 
@@ -338,7 +312,6 @@ module.exports = {
     parseProffesorSheet,
     parseLessonSheet,
     parseProffesorLessonSheet,
-    parseClassesSheet,
     getTime,
     findWeekProffesor,
     getWeekPlan,

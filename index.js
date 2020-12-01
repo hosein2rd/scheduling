@@ -70,7 +70,6 @@ app.post('/uploads', (req, res) => {
                     proffesorLessons: proffesorLessonSheet,
                     lessons: lessonSheet,
                     slots: slotSheet,
-                    classes: classesSheet,
                     interference: interferenceSheet
 
                 } = workbook.Sheets
@@ -152,13 +151,6 @@ app.post('/uploads', (req, res) => {
                 const interferences = Helper.parseInterferences(interferenceSheet)
                 for (const interference of interferences) {
                     await db.Interference.create({ lessonOne: interference.lessonOne, lessonTwo: interference.lessonTwo })
-                }
-
-                const classes = Helper.parseClassesSheet(classesSheet)
-                for (const classInfo of classes) {
-                    const lesson = await db.Lesson.findOne({ where: { name: classInfo.lesson } })
-
-                    await db.Class.create({ lessonId: lesson.id, name: `${classInfo.className}` })
                 }
 
                 return res.redirect('/result')
