@@ -138,14 +138,16 @@ app.post('/uploads', (req, res) => {
                         where: { name: proffesorLesson.proffesor }
                     })
 
-                    const lesson = await db.Lesson.findOne({
+                    const lessons = await db.Lesson.findAll({
                         where: { name: proffesorLesson.lesson }
                     })
 
-                    await db.ProffesorLesson.create({
-                        proffesorId: proffesor.id,
-                        lessonId: lesson.id
-                    })
+                    for (const lesson of lessons) {
+                        await db.ProffesorLesson.create({
+                            proffesorId: proffesor.id,
+                            lessonId: lesson.id
+                        })
+                    }
                 }
 
                 const interferences = Helper.parseInterferences(interferenceSheet)

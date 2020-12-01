@@ -31,17 +31,20 @@ const parseLessonSheet = (sheet) => {
     const result = []
 
     for (let i = 2; i <= size; i++) {
-        result.push({
-            lesson: sheet[`A${i}`].v,
-            forYear: sheet[`B${i}`].v,
-            count:
-                sheet[`C${i}`].v +
-                sheet[`D${i}`].v +
-                sheet[`E${i}`].v +
-                sheet[`F${i}`].v +
-                sheet[`G${i}`].v +
-                sheet[`H${i}`].v
-        })
+        const years = `${sheet[`B${i}`].v}`.split(',')
+        for (let j = 0; j < years.length; j++) {
+            result.push({
+                lesson: sheet[`A${i}`].v,
+                forYear: years[j],
+                count:
+                    sheet[`C${i}`].v +
+                    sheet[`D${i}`].v +
+                    sheet[`E${i}`].v +
+                    sheet[`F${i}`].v +
+                    sheet[`G${i}`].v +
+                    sheet[`H${i}`].v
+            })
+        }
     }
 
     return result
@@ -137,6 +140,8 @@ const findWeekProffesor = async (weekNumber, currentYuear) => {
         }
     }
 
+    console.log(where)
+
     const result = await db.Proffesor.findAll({
         include: [
             { model: db.Slot, where, required: true },
@@ -148,6 +153,10 @@ const findWeekProffesor = async (weekNumber, currentYuear) => {
             }
         ]
     })
+
+    if (result) {
+        console.log(result)
+    }
 
     return result
 }
