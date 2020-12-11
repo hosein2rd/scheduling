@@ -183,6 +183,77 @@ app.get('/result', async (req, res) => {
     res.render('result', { saturday, sunday, monday, tuesday, wendsday, years, currentYear })
 })
 
+app.get('/result/all', async (req, res) => {
+    const years = await db.Year.findAll()
+    await Helper.resetTable()
+
+    const saturdayAll = [{ text: '' }, { text: '' }, { text: '' }, { text: '' }]
+    const sundayAll = [{ text: '' }, { text: '' }, { text: '' }, { text: '' }]
+    const mondayAll = [{ text: '' }, { text: '' }, { text: '' }, { text: '' }]
+    const tuesdayAll = [{ text: '' }, { text: '' }, { text: '' }, { text: '' }]
+    const wendsdayAll = [{ text: '' }, { text: '' }, { text: '' }, { text: '' }]
+
+    for (const yearInstance of years) {
+        const year = yearInstance.value
+        const saturdayProffesors = await Helper.findWeekProffesor(0, year)
+        const saturday = await Helper.getWeekPlan(saturdayProffesors, 0)
+
+        saturday.forEach((value, index) => {
+            if (value.proffesor !== '') {
+                saturdayAll[index].text += `|  ${value.proffesor}-${value.lesson}-ساعت${value.time}`
+            }
+        })
+    
+        const sundayProffesors = await Helper.findWeekProffesor(1, year)
+        const sunday = await Helper.getWeekPlan(sundayProffesors, 1)
+
+        sunday.forEach((value, index) => {
+            if (value.proffesor !== '') {
+                sundayAll[index].text += `|  ${value.proffesor}-${value.lesson}-ساعت${value.time}`
+            }
+        })
+    
+        const mondayProffesors = await Helper.findWeekProffesor(2, year)
+        const monday = await Helper.getWeekPlan(mondayProffesors, 2)
+
+        monday.forEach((value, index) => {
+            if (value.proffesor !== '') {
+                mondayAll[index].text += `|  ${value.proffesor}-${value.lesson}-ساعت${value.time}`
+            }
+        })
+    
+        const tuesdayProffesors = await Helper.findWeekProffesor(3, year)
+        const tuesday = await Helper.getWeekPlan(tuesdayProffesors, 3)
+
+        tuesday.forEach((value, index) => {
+            if (value.proffesor !== '') {
+                tuesdayAll[index].text += `|  ${value.proffesor}-${value.lesson}-ساعت${value.time}`
+            }
+        })
+    
+        const wendsdayProffesors = await Helper.findWeekProffesor(4, year)
+        const wendsday = await Helper.getWeekPlan(wendsdayProffesors, 4)
+
+        wendsday.forEach((value, index) => {
+            if (value.proffesor !== '') {
+                wendsdayAll[index].text += `|  ${value.proffesor}-${value.lesson}-ساعت${value.time}`
+            }
+        })
+    }
+
+    res.render(
+        'all',
+        {
+            years,
+            saturday: saturdayAll,
+            sunday: sundayAll,
+            monday: mondayAll,
+            tuesday: tuesdayAll,
+            wendsday: wendsdayAll
+        }
+    )
+})
+
 app.get('/result/:year', async (req, res) => {
     const years = await db.Year.findAll()
     const currentYear = req.params.year

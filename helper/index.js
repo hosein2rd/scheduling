@@ -261,8 +261,14 @@ const getWeekPlan = async (weekProffesors, weekNumber) => {
     return result
 }
 
-const resetTable = async (currentYear) => {
-    await db.Lesson.update({ isTaken: false }, { where: { forYear: { [Op.eq]: currentYear } } })
+const resetTable = async (currentYear = null) => {
+    let where = {}
+
+    if (currentYear) {
+        where = { forYear: { [Op.eq]: currentYear } }
+    }
+
+    await db.Lesson.update({ isTaken: false }, { where: where })
     await db.Slot.update({ isTaken: false  }, { where: {} })
 }
 
