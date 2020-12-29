@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql
+    restart: always
+    volumes:
+      - ./db:/var/lib/mysql
+    environment: 
+      MYSQL_DATABASE: scheduling
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: "1234"
+
+  web:
+    depends_on: 
+      - db
+    build: .
+    ports: 
+      - 4000:4000
+    environment: 
+      DB_HOST: db
+      DB_PASS: "1234"
