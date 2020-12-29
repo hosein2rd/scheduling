@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "npm i -g sequelize-cli && sequelize db:create && sequelize db:migrate && node index.js",
     "dev": "nodemon index.js"
   },
   "author": "",
@@ -17,6 +17,7 @@
     "hbs": "^4.1.1",
     "jalali-moment": "^3.3.8",
     "mysql2": "^2.2.5",
+    "pg": "^8.5.1",
     "sequelize": "^6.3.5",
     "xlsx": "^0.16.8"
   },
