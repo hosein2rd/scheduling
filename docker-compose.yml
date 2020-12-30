@@ -16,7 +16,7 @@ services:
       - db
     build: .
     ports: 
-      - 4000:4000
+      - 3000:4000
     environment: 
       DB_HOST: db
       DB_PASS: "1234"
