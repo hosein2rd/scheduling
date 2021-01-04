@@ -74,6 +74,8 @@ app.post('/uploads', (req, res) => {
 
                 } = workbook.Sheets
 
+                if (!proffesorLessonSheet || !lessonSheet || !slotSheet || !interferenceSheet) return res.redirect('/')
+
                 const proffesorSlots = Helper.parseProffesorSheet(slotSheet)
                 for (const proffesorSlot of proffesorSlots) {
                     const proffesor = await db.Proffesor.create({ name: proffesorSlot.proffesor })
